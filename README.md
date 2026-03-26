@@ -1,4 +1,4 @@
-# Partner logo onboarding
+# Partner Logo Uploader
 
 Next.js app for partners to upload SVG logos and for internal admins to review, configure placements, and copy Linear-ready markdown.
 

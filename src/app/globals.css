@@ -17,3 +17,29 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
+
+@keyframes flora-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--flora-r, 0deg));
+  }
+  25% {
+    transform: translate(var(--flora-x1, 0px), var(--flora-y1, 0px))
+      rotate(calc(var(--flora-r, 0deg) + 5deg));
+  }
+  50% {
+    transform: translate(var(--flora-x2, 0px), var(--flora-y2, 0px))
+      rotate(calc(var(--flora-r, 0deg) - 7deg));
+  }
+  75% {
+    transform: translate(var(--flora-x3, 0px), var(--flora-y3, 0px))
+      rotate(calc(var(--flora-r, 0deg) + 4deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flora-bg__img {
+    animation: none !important;
+    opacity: 0.06 !important;
+  }
+}

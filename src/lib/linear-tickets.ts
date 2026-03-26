@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/lib/app-name";
 import { getAppUrl } from "@/lib/env";
 
 export type PartnerConfigRow = {
@@ -48,7 +49,7 @@ export function buildDesignTicketMarkdown(params: {
 
 **Partner page in Ops Dash:** ${dash}
 
-[Logo files attached — see uploaded assets in partner onboarding portal: ${app}/admin/partners/${params.partnerId}]
+[Logo files attached — see uploaded assets in ${APP_NAME}: ${app}/admin/partners/${params.partnerId}]
 
 ---
 
@@ -77,5 +78,5 @@ export function buildEngTicketMarkdown(params: {
 Partner ID in prod: ${prod}
 Slug: ${slug}
 
-[Logo file: link to dark logo in partner onboarding portal: ${app}/admin/partners/${params.partnerId}]`;
+[Logo file: link to dark logo in ${APP_NAME}: ${app}/admin/partners/${params.partnerId}]`;
 }
