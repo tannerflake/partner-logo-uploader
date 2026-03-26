@@ -7,7 +7,9 @@ import { APP_NAME } from "@/lib/app-name";
 import { CobrandedExperienceInfo } from "@/components/partner/CobrandedExperienceInfo";
 import {
   LOGO_VARIANT_GUIDELINES,
-  UPLOAD_STEP_INTRO,
+  UPLOAD_STEP_AVOID_BULLETS,
+  UPLOAD_STEP_AVOID_LABEL,
+  UPLOAD_STEP_INTRO_LEAD,
 } from "@/lib/logo-guidelines-for-variants";
 import { LOGO_VARIANTS, type LogoVariantKey } from "@/lib/partner-variants";
 import {
@@ -187,9 +189,19 @@ export function PartnerWizard() {
 
       {step === 3 && (
         <section className="space-y-7 md:space-y-8">
-          <p className="text-base leading-relaxed text-neutral-600 md:text-lg">
-            {UPLOAD_STEP_INTRO}
-          </p>
+          <div className="space-y-3 text-base leading-relaxed text-neutral-600 md:text-lg">
+            <p>{UPLOAD_STEP_INTRO_LEAD}</p>
+            <div>
+              <p className="font-medium text-neutral-700">
+                {UPLOAD_STEP_AVOID_LABEL}
+              </p>
+              <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-neutral-500 md:text-base">
+                {UPLOAD_STEP_AVOID_BULLETS.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
           {LOGO_VARIANTS.map((v) => (
             <div
               key={v.key}
@@ -216,7 +228,7 @@ export function PartnerWizard() {
               <p className="mb-3 text-base leading-relaxed text-neutral-600 md:text-lg">
                 {v.description}
               </p>
-              <ul className="mb-4 list-disc space-y-2 pl-5 text-base leading-relaxed text-neutral-700 md:text-lg">
+              <ul className="mb-4 list-disc space-y-2 pl-5 text-sm leading-relaxed text-neutral-500 md:text-base">
                 {LOGO_VARIANT_GUIDELINES[v.key].map((line, i) => (
                   <li key={`${v.key}-${i}`}>{line}</li>
                 ))}

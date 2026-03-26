@@ -5,9 +5,17 @@ import type { LogoVariantKey } from "./partner-variants";
  * (see repo `logo-guidelines.md`).
  */
 
-export const UPLOAD_STEP_INTRO =
-  "Your logo will appear in your branded portal next to the “Powered by Tiny Health” wordmark. " +
-  "Upload SVGs below. Avoid very small type or dense multi-line text inside the artwork—when scaled down in the portal or on PDFs, that detail often becomes illegible.";
+/** Opening copy for the Logos (upload) step. */
+export const UPLOAD_STEP_INTRO_LEAD =
+  "Your logo will appear in your branded portal next to the “Powered by Tiny Health” wordmark. Upload SVGs below.";
+
+/** Short label + bullets for artwork that is hard to use at small sizes. */
+export const UPLOAD_STEP_AVOID_LABEL = "Things to avoid:";
+
+export const UPLOAD_STEP_AVOID_BULLETS = [
+  "Very small or dense text inside the artwork (it often becomes illegible when scaled down in the portal or on PDFs).",
+  "Logos with an extreme aspect ratio—unusually tall or wide marks can be difficult to fit in our templates.",
+] as const;
 
 export const LOGO_VARIANT_GUIDELINES: Record<
   LogoVariantKey,
