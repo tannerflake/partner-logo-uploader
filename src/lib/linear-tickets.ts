@@ -44,7 +44,6 @@ export function buildDesignTicketMarkdown(params: {
   - Powered by in kit activation flow: ${yn(params.cfg.powered_by_kit_flow)}
 
 **PDF:** ${yn(params.cfg.pdf_required)}
-- If Yes: will require additional ticket from ENG
 - Powered by in PDF can be added through a checkbox in Ops Dash
 
 **Partner page in Ops Dash:** ${dash}
