@@ -40,6 +40,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .flora-bg__img {
     animation: none !important;
-    opacity: 0.06 !important;
+    opacity: 0.09 !important;
   }
 }

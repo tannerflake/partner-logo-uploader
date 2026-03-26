@@ -1,9 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { APP_NAME } from "@/lib/app-name";
+import { CobrandedExperienceInfo } from "@/components/partner/CobrandedExperienceInfo";
+import {
+  LOGO_VARIANT_GUIDELINES,
+  UPLOAD_STEP_INTRO,
+} from "@/lib/logo-guidelines-for-variants";
 import { LOGO_VARIANTS, type LogoVariantKey } from "@/lib/partner-variants";
 import {
   svgErrorMessage,
@@ -11,7 +16,7 @@ import {
   validateSvgFile,
 } from "@/lib/svg";
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3 | 4 | 5;
 
 const initialFiles = (): Partial<Record<LogoVariantKey, File | null>> => ({
   primary: null,
@@ -24,7 +29,21 @@ export function PartnerWizard() {
   const [step, setStep] = useState<Step>(1);
   const [companyName, setCompanyName] = useState("");
   const [files, setFiles] = useState(initialFiles);
+  const [previewUrls, setPreviewUrls] = useState<
+    Partial<Record<LogoVariantKey, string>>
+  >({});
   const [submitting, setSubmitting] = useState(false);
+
+  const previewUrlsRef = useRef(previewUrls);
+  previewUrlsRef.current = previewUrls;
+
+  useEffect(() => {
+    return () => {
+      Object.values(previewUrlsRef.current).forEach((u) => {
+        if (u) URL.revokeObjectURL(u);
+      });
+    };
+  }, []);
 
   const canGoToUpload = companyName.trim().length > 0;
 
@@ -56,7 +75,7 @@ export function PartnerWizard() {
       toast.error(err);
       return;
     }
-    setStep(3);
+    setStep(4);
   }
 
   async function submit() {
@@ -89,27 +108,33 @@ export function PartnerWizard() {
         );
         return;
       }
-      setStep(4);
+      setStep(5);
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-5 pb-12 pt-20 sm:px-8 md:pb-16 md:pt-24">
+    <div
+      className={`mx-auto px-5 pb-12 pt-20 sm:px-8 md:pb-16 md:pt-24 ${
+        step === 2 ? "max-w-7xl" : "max-w-2xl"
+      }`}
+    >
       <header className="mb-10 text-center md:mb-12">
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 md:text-4xl">
           {APP_NAME}
         </h1>
       </header>
 
-      {step < 4 && (
+      {step < 5 && (
         <div className="mb-8 flex flex-wrap items-center justify-center gap-1 text-sm text-neutral-500 md:mb-10 md:text-base">
           <StepDot active={step === 1} label="Company Name" />
           <StepArrow />
-          <StepDot active={step === 2} label="Logos" />
+          <StepDot active={step === 2} label="Info" />
           <StepArrow />
-          <StepDot active={step === 3} label="Review" />
+          <StepDot active={step === 3} label="Logos" />
+          <StepArrow />
+          <StepDot active={step === 4} label="Review" />
         </div>
       )}
 
@@ -139,7 +164,32 @@ export function PartnerWizard() {
       )}
 
       {step === 2 && (
+        <section className="space-y-6 md:space-y-8">
+          <CobrandedExperienceInfo />
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="flex-1 rounded-lg border border-neutral-300 bg-white py-3.5 text-base font-medium text-neutral-800 md:py-4 md:text-lg"
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep(3)}
+              className="flex-1 rounded-lg bg-neutral-900 py-3.5 text-base font-medium text-white md:py-4 md:text-lg"
+            >
+              Continue
+            </button>
+          </div>
+        </section>
+      )}
+
+      {step === 3 && (
         <section className="space-y-7 md:space-y-8">
+          <p className="text-base leading-relaxed text-neutral-600 md:text-lg">
+            {UPLOAD_STEP_INTRO}
+          </p>
           {LOGO_VARIANTS.map((v) => (
             <div
               key={v.key}
@@ -163,17 +213,31 @@ export function PartnerWizard() {
                   </span>
                 )}
               </div>
-              <p className="mb-4 text-base leading-relaxed text-neutral-600 md:text-lg">
+              <p className="mb-3 text-base leading-relaxed text-neutral-600 md:text-lg">
                 {v.description}
               </p>
-              <div className="mb-4 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50">
-                <Image
-                  src={v.exampleSrc}
-                  alt={`Example for ${v.label}`}
-                  width={560}
-                  height={168}
-                  className="h-auto w-full object-contain p-5 md:p-6"
-                />
+              <ul className="mb-4 list-disc space-y-2 pl-5 text-base leading-relaxed text-neutral-700 md:text-lg">
+                {LOGO_VARIANT_GUIDELINES[v.key].map((line, i) => (
+                  <li key={`${v.key}-${i}`}>{line}</li>
+                ))}
+              </ul>
+              <div className="mb-4 flex min-h-[11rem] items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 md:min-h-[12.5rem]">
+                {previewUrls[v.key] ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- blob preview of user SVG
+                  <img
+                    src={previewUrls[v.key]}
+                    alt={`Preview of ${v.label}`}
+                    className="max-h-[min(11rem,42vh)] w-full object-contain p-5 md:max-h-[min(12.5rem,45vh)] md:p-6"
+                  />
+                ) : (
+                  <Image
+                    src={v.exampleSrc}
+                    alt={`Example for ${v.label}`}
+                    width={560}
+                    height={168}
+                    className="h-auto w-full object-contain p-5 md:p-6"
+                  />
+                )}
               </div>
               <input
                 type="file"
@@ -181,28 +245,56 @@ export function PartnerWizard() {
                 className="block w-full text-base text-neutral-700 file:mr-4 file:rounded-md file:border-0 file:bg-neutral-900 file:px-4 file:py-2.5 file:text-base file:font-medium file:text-white"
                 onChange={async (e) => {
                   const f = e.target.files?.[0] ?? null;
-                  setFiles((prev) => ({ ...prev, [v.key]: f }));
-                  if (f) {
-                    const ext = validateSvgFile(f);
-                    if (ext) {
-                      toast.error(`${v.label}: ${svgErrorMessage(ext)}`);
-                      return;
-                    }
-                    const c = await validateSvgContent(f);
-                    if (c) toast.error(`${v.label}: ${svgErrorMessage(c)}`);
+                  const key = v.key;
+
+                  const revokeKey = () => {
+                    setPreviewUrls((prev) => {
+                      const u = prev[key];
+                      if (u) URL.revokeObjectURL(u);
+                      const { [key]: _, ...rest } = prev;
+                      return rest;
+                    });
+                  };
+
+                  if (!f) {
+                    revokeKey();
+                    setFiles((prev) => ({ ...prev, [key]: null }));
+                    return;
                   }
+
+                  const ext = validateSvgFile(f);
+                  if (ext) {
+                    toast.error(`${v.label}: ${svgErrorMessage(ext)}`);
+                    e.target.value = "";
+                    return;
+                  }
+                  const c = await validateSvgContent(f);
+                  if (c) {
+                    toast.error(`${v.label}: ${svgErrorMessage(c)}`);
+                    e.target.value = "";
+                    return;
+                  }
+
+                  setPreviewUrls((prev) => {
+                    const old = prev[key];
+                    if (old) URL.revokeObjectURL(old);
+                    return { ...prev, [key]: URL.createObjectURL(f) };
+                  });
+                  setFiles((prev) => ({ ...prev, [key]: f }));
                 }}
               />
             </div>
           ))}
           <p className="text-sm leading-relaxed text-neutral-500 md:text-base">
-            Only .svg files are accepted. Our design team will verify your file
-            meets all technical requirements.
+            <strong className="font-medium text-neutral-700">Format:</strong>{" "}
+            only <strong className="text-neutral-800">.svg</strong> files.
+            Outlined artwork and correct sizing in our templates are verified
+            by our design team after you submit.
           </p>
           <div className="flex gap-3">
             <button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => setStep(2)}
               className="flex-1 rounded-lg border border-neutral-300 bg-white py-3.5 text-base font-medium text-neutral-800 md:py-4 md:text-lg"
             >
               Back
@@ -220,7 +312,7 @@ export function PartnerWizard() {
         </section>
       )}
 
-      {step === 3 && (
+      {step === 4 && (
         <section className="space-y-5 md:space-y-6">
           <div className="rounded-xl border border-neutral-200 bg-white p-5 md:p-6">
             <h2 className="text-base font-medium text-neutral-500 md:text-lg">
@@ -246,7 +338,7 @@ export function PartnerWizard() {
           <div className="flex gap-3">
             <button
               type="button"
-              onClick={() => setStep(2)}
+              onClick={() => setStep(3)}
               className="flex-1 rounded-lg border border-neutral-300 bg-white py-3.5 text-base font-medium text-neutral-800 md:py-4 md:text-lg"
             >
               Back
@@ -263,7 +355,7 @@ export function PartnerWizard() {
         </section>
       )}
 
-      {step === 4 && (
+      {step === 5 && (
         <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-8 text-center md:p-10">
           <h2 className="text-2xl font-semibold text-emerald-900 md:text-3xl">
             Thank you!

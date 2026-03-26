@@ -4,8 +4,8 @@ import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import { FLORA_FILES, floraImageSrc } from "@/lib/flora-assets";
 
-const COUNT_MIN = 22;
-const COUNT_MAX = 30;
+const COUNT_MIN = 8;
+const COUNT_MAX = 12;
 
 function rand(min: number, max: number): number {
   return min + Math.random() * (max - min);
@@ -75,7 +75,7 @@ export function FloatingFloraBackground() {
           key={item.id}
           src={item.src}
           alt=""
-          className="flora-bg__img absolute opacity-[0.13] will-change-transform select-none"
+          className="flora-bg__img absolute opacity-20 will-change-transform select-none"
           style={
             {
               top: item.top,
